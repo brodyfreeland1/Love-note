@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>For Kayla ❤️</title>
+  <style>
+    :root{--bg:#fff6fb;--accent:#ff3b8f;--rose:#ff6fa3;--gold:#ffd166}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff 0%,#fff6fb 100%);color:#222}
+    .card{width:min(720px,92vw);max-width:900px;background:linear-gradient(180deg,white, #fff7fb);border-radius:18px;box-shadow:0 12px 40px rgba(17,24,39,0.15);padding:34px;position:relative;overflow:hidden}
+    h1{font-size:28px;margin:0 0 8px;color:var(--accent)}
+    p.lead{font-size:18px;margin:0 0 18px}
+    .message{font-size:20px;line-height:1.35;margin:12px 0 22px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#fff0f6,#fff9fb);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+    .hearts{position:absolute;inset:0;pointer-events:none}
+    .controls{display:flex;gap:12px;flex-wrap:wrap}
+    button{background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(255,59,143,0.14)}
+    button.secondary{background:transparent;color:var(--accent);border:2px solid rgba(255,59,143,0.12)}
+    .small{font-size:13px;color:#666;margin-top:14px}
+    .extra{margin-top:18px;display:flex;gap:12px;align-items:center}
+    .hidden{display:none}
+    /* tiny confetti/hearts animation */
+    .heart{position:absolute;font-size:18px;opacity:0;transform:translateY(0)}
+    @keyframes floatUp{0%{transform:translateY(20px) scale(.8);opacity:0}40%{opacity:1}100%{transform:translateY(-200px) scale(1.1);opacity:0}}
+    /* responsive */
+    @media (max-width:420px){.card{padding:18px;border-radius:12px}h1{font-size:22px}.message{font-size:18px}}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <canvas id="confetti" class="hearts"></canvas>
+    <h1>For Kayla ❤️</h1>
+    <p class="lead">A tiny digital receipt of my gigantic feelings.</p>
+
+    <div class="message" id="mainMessage">
+      <strong>I love you, Kayla ❤️</strong>
+      <div style="margin-top:8px">You make every day better — and you’re the only thing I’d ever call <em>priceless</em>.</div>
+    </div>
+
+    <div class="controls">
+      <button id="surpriseBtn">Surprise Me ✨</button>
+      <button class="secondary" id="revealPrice">Reveal “Price” (Not Recommended)</button>
+      <button class="secondary" id="shareBtn">Save a Screenshot</button>
+    </div>
+
+    <div class="small">Tap <strong>Surprise Me</strong> for a little confetti + hearts. Tap <strong>Reveal “Price”</strong> to see a silly breakdown.</div>
+
+    <div class="extra hidden" id="priceBox">
+      <div style="background:#fff;border-radius:10px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,0.06);flex:1">
+        <strong>PRICE (classified)</strong>
+        <div style="margin-top:6px">Subtotal: infinite hugs<br/>Discount: 100% off worries<br/>Total: still priceless 💖</div>
+      </div>
+    </div>
+
+    <div class="small" style="margin-top:16px">Made with ❤️ by Someone who thinks you're perfect.</div>
+  </div>
+
+  <script>
+    // Confetti/hearts canvas
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    function resize(){canvas.width = window.innerWidth; canvas.height = window.innerHeight}
+    window.addEventListener('resize', resize); resize();
+
+    function popHearts(){
+      const hearts = [];
+      const colors = ['#ff6fa3','#ff3b8f','#ffd166','#ff9bb4'];
+      for(let i=0;i<40;i++){
+        hearts.push({x:Math.random()*canvas.width, y:canvas.height - 120 + Math.random()*80, vx:(Math.random()-0.5)*1.5, vy:-4 - Math.random()*3, s:8+Math.random()*16, c:colors[Math.floor(Math.random()*colors.length)], life: Math.random()*60+60});
+      }
+      let t = 0;
+      function frame(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for(let i=hearts.length-1;i>=0;i--){
+          const h = hearts[i];
+          h.x += h.vx; h.y += h.vy; h.vy += 0.08; h.life--;
+          ctx.save();
+          ctx.translate(h.x,h.y);
+          ctx.rotate(Math.sin((t+i)/10)/6);
+          ctx.globalAlpha = Math.max(0, Math.min(1, h.life/80));
+          // draw heart using path
+          ctx.beginPath();
+          const s = h.s/10;
+          ctx.moveTo(0,-h.s);
+          ctx.bezierCurveTo(h.s, -h.s*1.6, h.s*2, h.s*0.2, 0, h.s*1.6);
+          ctx.bezierCurveTo(-h.s*2, h.s*0.2, -h.s, -h.s*1.6, 0, -h.s);
+          ctx.fillStyle = h.c; ctx.fill();
+          ctx.restore();
+          if(h.life<=0) hearts.splice(i,1);
+        }
+        t++; if(hearts.length>0) requestAnimationFrame(frame)
+      }
+      requestAnimationFrame(frame);
+    }
+
+    document.getElementById('surpriseBtn').addEventListener('click', ()=>{
+      popHearts();
+      // small text effect
+      const m = document.getElementById('mainMessage');
+      m.animate([{transform:'scale(1)'},{transform:'scale(1.03)'},{transform:'scale(1)'}],{duration:700});
+    });
+
+    document.getElementById('revealPrice').addEventListener('click', ()=>{
+      const box = document.getElementById('priceBox');
+      box.classList.toggle('hidden');
+      // confetti for dramatic reveal
+      popHearts();
+    });
+
+    document.getElementById('shareBtn').addEventListener('click', async ()=>{
+      try{
+        // try Web Share / screenshot
+        const blob = await htmlToImage(document.querySelector('.card'));
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download='for-kayla.png'; a.click();
+      }catch(e){
+        alert('Screenshot not available on this browser. Try on mobile or use a screenshot tool.');
+      }
+    });
+
+    // small helper that uses html2canvas logic but simplified fallback
+    async function htmlToImage(node){
+      // rudimentary approach: use SVG foreignObject
+      const rect = node.getBoundingClientRect();
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${rect.width}' height='${rect.height}'><foreignObject width='100%' height='100%'>${new XMLSerializer().serializeToString(node)}</foreignObject></svg>`;
+      const blob = new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+      return blob;
+    }
+
+    // Nice touch: short keyboard shortcut: press K to show love again
+    window.addEventListener('keydown', (e)=>{if(e.key.toLowerCase()==='k'){popHearts();}});
+  </script>
+</body>
+</html>
